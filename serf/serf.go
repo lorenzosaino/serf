@@ -460,6 +460,11 @@ func (s *Serf) UserEvent(name string, payload []byte, coalesce bool) error {
 	// Process update locally
 	s.handleUserEvent(&msg)
 
+	// Do not broadcast the event if this is the only alive node in the cluster
+	if s.config.DropEventsIfNoAliveMembers && !s.hasAliveMembers() {
+		return nil
+	}
+
 	// Start broadcasting the event
 	raw, err := encodeMessage(messageUserEventType, &msg)
 	if err != nil {
@@ -534,6 +539,11 @@ func (s *Serf) Query(name string, payload []byte, params *QueryParam) (*QueryRes
 
 	// Process query locally
 	s.handleQuery(&q)
+
+	// Do not broadcast the query if this is the only alive node in the cluster
+	if s.config.DropQueriesIfNoAliveMembers && !s.hasAliveMembers() {
+		return resp, nil
+	}
 
 	// Start broadcasting the event
 	s.queryBroadcasts.QueueBroadcast(&broadcast{

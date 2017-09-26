@@ -225,6 +225,18 @@ type Config struct {
 	// Merge can be optionally provided to intercept a cluster merge
 	// and conditionally abort the merge.
 	Merge MergeDelegate
+
+	// DropEventsIfNoAliveMembers controls if Serf will broadcast user events
+	// if there aren't any healthy nodes in the cluster other then ourselves.
+	// If this variable is true and a node is the only alive member in a
+	// cluster, Serf will deliver user events only locally.
+	DropEventsIfNoAliveMembers bool
+
+	// DropQueriesIfNoAliveMembers controls if Serf will broadcast queries
+	// if there aren't any healthy nodes in the cluster other then ourselves.
+	// If this variable is true and a node is the only alive member in a
+	// cluster, Serf will deliver queries only locally.
+	DropQueriesIfNoAliveMembers bool
 }
 
 // Init allocates the subdata structures
