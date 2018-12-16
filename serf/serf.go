@@ -459,6 +459,11 @@ func (s *Serf) UserEvent(name string, payload []byte, coalesce bool) error {
 	// Process update locally
 	s.handleUserEvent(&msg)
 
+	// Do not broadcast the event if this is the only node in the cluster
+	if !s.hasAliveMembers() {
+		return nil
+	}
+
 	// Start broadcasting the event
 	raw, err := encodeMessage(messageUserEventType, &msg)
 	if err != nil {
